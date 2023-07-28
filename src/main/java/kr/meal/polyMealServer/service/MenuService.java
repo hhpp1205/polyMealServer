@@ -15,7 +15,6 @@ import java.util.Map;
 public class MenuService {
 
     private final String POLY_DEAJEON_URL = "https://www.kopo.ac.kr/daejeon/content.do?menu=5417";
-
     private final String[] DAY_OF_THE_WEEK =  {"월","화","수","목","금","토","일"};
 
 
@@ -28,34 +27,25 @@ public class MenuService {
 
         Elements td = menuTags.select("td");
 
+        List<String> thisWeekDateData = menuTags.select("script").stream()
+                .map(dateTag -> dateTag.toString().substring(32, 42)).toList();
+
         int dateIdx = 0;
 
         for (int i = 1; i < td.size(); i += 4) {
             Menu menu = Menu.builder()
-                    .date(DAY_OF_THE_WEEK[dateIdx])
+                    .date(thisWeekDateData.get(dateIdx))
+                    .dayOfTheWeek(DAY_OF_THE_WEEK[dateIdx])
                     .breakfast(td.get(i).text())
                     .lunch(td.get(i + 1).text())
                     .dinner(td.get(i + 2).text())
                     .build();
+            System.out.println("menu = " + menu);
 
             dateManuMap.put(DAY_OF_THE_WEEK[dateIdx++], menu);
         }
 
-
-        List<String> thisWeekDateData = menuTags.select("script").stream()
-                .map(dateTag -> dateTag.toString().substring(32, 42)).toList();
-
-        System.out.println("dateManuMap = " + dateManuMap);
-        System.out.println("thisWeekDateData = " + thisWeekDateData);
-
         return dateManuMap;
     }
 
-    public Elements getDate() throws IOException {
-        Document doc = Jsoup.connect(POLY_DEAJEON_URL).get();
-
-        Elements thisWeekDateTagData = doc.select(".week_move .week script");
-
-        return thisWeekDateTagData;
-    }
 }
