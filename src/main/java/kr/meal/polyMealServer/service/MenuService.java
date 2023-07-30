@@ -1,6 +1,7 @@
 package kr.meal.polyMealServer.service;
 
 import kr.meal.polyMealServer.dto.Menu;
+import kr.meal.polyMealServer.dto.SchoolCode;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -19,7 +20,7 @@ public class MenuService {
 
 
 
-    public Map<String, Menu> getMenu() throws IOException {
+    public Menu getMenu(SchoolCode schoolCode, String date) throws IOException {
         Document doc = Jsoup.connect(POLY_DEAJEON_URL).get();
         Elements menuTags = doc.select(".menu tr");
 
@@ -42,10 +43,10 @@ public class MenuService {
                     .build();
             System.out.println("menu = " + menu);
 
-            dateManuMap.put(DAY_OF_THE_WEEK[dateIdx++], menu);
+            dateManuMap.put(thisWeekDateData.get(dateIdx++), menu);
         }
 
-        return dateManuMap;
+        return dateManuMap.get(date);
     }
 
 }

@@ -1,13 +1,12 @@
 package kr.meal.polyMealServer.service;
 
-import org.jsoup.nodes.Element;
+import kr.meal.polyMealServer.dto.SchoolCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class MenuServiceTest {
 
@@ -16,10 +15,7 @@ class MenuServiceTest {
 
     @Test
     void getMenu() throws IOException {
-        menuService.getMenu();
-//        for(Element x : menuService.getMenu()) {
-//                System.out.println("x = " + x);
-//        }
+        menuService.getMenu(SchoolCode.POLY_DEAJEON, "2023-07-27");
     }
 
 }

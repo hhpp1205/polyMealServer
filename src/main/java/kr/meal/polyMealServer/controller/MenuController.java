@@ -20,12 +20,13 @@ public class MenuController {
     private final MenuService menuService;
 
     /**
+     * 학교코드와 날짜를 통해 메뉴 조회
      * @param schoolCode
      * @param date ex) 2023-07-24
      */
     @GetMapping("/menus")
-    public Map<String, Menu> getMenu(@RequestParam SchoolCode schoolCode, @RequestParam String date ) throws IOException {
-        return menuService.getMenu();
+    public Menu getMenu(@RequestParam SchoolCode schoolCode, @RequestParam String date ) throws IOException {
+        return menuService.getMenu(schoolCode, date);
     }
 
 
