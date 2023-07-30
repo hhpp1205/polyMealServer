@@ -22,10 +22,4 @@ class MenuServiceTest {
 //        }
     }
 
-    @Test
-    void getDate() throws IOException {
-        for(Element x : menuService.getDate()) {
-            System.out.println("x = " + x.toString().substring(31, 39));
-        }
-    }
 }

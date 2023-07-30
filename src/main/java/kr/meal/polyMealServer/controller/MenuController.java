@@ -1,6 +1,7 @@
 package kr.meal.polyMealServer.controller;
 
 import kr.meal.polyMealServer.dto.Menu;
+import kr.meal.polyMealServer.dto.SchoolCode;
 import kr.meal.polyMealServer.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +24,7 @@ public class MenuController {
      * @param date ex) 2023-07-24
      */
     @GetMapping("/menus")
-    public Map<String, Menu> getMenu(@RequestParam String schoolCode, @RequestParam String date ) throws IOException {
+    public Map<String, Menu> getMenu(@RequestParam SchoolCode schoolCode, @RequestParam String date ) throws IOException {
         return menuService.getMenu();
     }
 
