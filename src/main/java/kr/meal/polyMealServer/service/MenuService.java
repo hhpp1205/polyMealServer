@@ -16,12 +16,12 @@ import java.util.Map;
 public class MenuService {
 
     private final String POLY_DEAJEON_URL = "https://www.kopo.ac.kr/daejeon/content.do?menu=5417";
+    private final String POYL_JUNGSU_URL = "https://www.kopo.ac.kr/jungsu/content.do?menu=247";
+
     private final String[] DAY_OF_THE_WEEK =  {"월","화","수","목","금","토","일"};
 
-
-
     public Menu getMenu(SchoolCode schoolCode, String date) throws IOException {
-        Document doc = Jsoup.connect(POLY_DEAJEON_URL).get();
+        Document doc = Jsoup.connect(schoolCode.getUrl()).get();
         Elements menuTags = doc.select(".menu tr");
 
         Map<String, Menu> dateManuMap = new HashMap<>();
@@ -35,13 +35,13 @@ public class MenuService {
 
         for (int i = 1; i < td.size(); i += 4) {
             Menu menu = Menu.builder()
+                    .schoolName(schoolCode.getSchoolName())
                     .date(thisWeekDateData.get(dateIdx))
                     .dayOfTheWeek(DAY_OF_THE_WEEK[dateIdx])
                     .breakfast(td.get(i).text())
                     .lunch(td.get(i + 1).text())
                     .dinner(td.get(i + 2).text())
                     .build();
-            System.out.println("menu = " + menu);
 
             dateManuMap.put(thisWeekDateData.get(dateIdx++), menu);
         }

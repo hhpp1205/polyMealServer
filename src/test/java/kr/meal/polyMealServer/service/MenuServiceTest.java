@@ -1,5 +1,6 @@
 package kr.meal.polyMealServer.service;
 
+import kr.meal.polyMealServer.dto.Menu;
 import kr.meal.polyMealServer.dto.SchoolCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,8 @@ class MenuServiceTest {
 
     @Test
     void getMenu() throws IOException {
-        menuService.getMenu(SchoolCode.POLY_DEAJEON, "2023-07-27");
+        Menu menu = menuService.getMenu(SchoolCode.PORY_JUNGSU, "2023-07-31");
+        System.out.println("result = " + menu);
     }
 
 }

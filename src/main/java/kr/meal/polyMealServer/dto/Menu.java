@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class Menu {
-    private String schoolCode;
+    private String schoolName;
     private String date;
     private String dayOfTheWeek;
     private String breakfast;
@@ -13,8 +13,8 @@ public class Menu {
     private String dinner;
 
     @Builder
-    public Menu(String schoolCode, String date, String dayOfTheWeek, String breakfast, String lunch, String dinner) {
-        this.schoolCode = schoolCode;
+    public Menu(String schoolName, String date, String dayOfTheWeek, String breakfast, String lunch, String dinner) {
+        this.schoolName = schoolName;
         this.date = date;
         this.dayOfTheWeek = dayOfTheWeek;
         this.breakfast = breakfast;
@@ -25,7 +25,7 @@ public class Menu {
     @Override
     public String toString() {
         return "Menu{" +
-                "schoolCode='" + schoolCode + '\'' +
+                "schoolCode='" + schoolName + '\'' +
                 ", date='" + date + '\'' +
                 ", dayOfTheWeek='" + dayOfTheWeek + '\'' +
                 ", breakfast='" + breakfast + '\'' +
