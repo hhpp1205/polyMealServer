@@ -38,9 +38,13 @@ public class MenuService {
                     .schoolName(schoolCode.getSchoolName())
                     .date(thisWeekDateData.get(dateIdx))
                     .dayOfTheWeek(DAY_OF_THE_WEEK[dateIdx])
-                    .breakfast(td.get(i).text())
-                    .lunch(td.get(i + 1).text())
-                    .dinner(td.get(i + 2).text())
+                    .meal(
+                            List.of(
+                                    td.get(i).text(),
+                                    td.get(i + 1).text(),
+                                    td.get(i + 2).text()
+                                    )
+                    )
                     .build();
 
             dateManuMap.put(thisWeekDateData.get(dateIdx++), menu);

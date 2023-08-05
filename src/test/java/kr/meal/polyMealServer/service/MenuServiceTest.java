@@ -16,7 +16,7 @@ class MenuServiceTest {
 
     @Test
     void getMenu() throws IOException {
-        Menu menu = menuService.getMenu(SchoolCode.PORY_JUNGSU, "2023-07-31");
+        Menu menu = menuService.getMenu(SchoolCode.POLY_JUNGSU, "2023-07-31");
         System.out.println("result = " + menu);
     }
 
