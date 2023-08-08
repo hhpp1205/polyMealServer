@@ -19,4 +19,21 @@ public class Menu {
         this.dayOfTheWeek = dayOfTheWeek;
         this.meal = meal;
     }
+
+    public static Menu ofEmptyMenu(SchoolCode schoolCode, String date) {
+        return Menu.builder()
+                .date(date)
+                .schoolName(schoolCode.getSchoolName())
+                .build();
+    }
+
+    @Override
+    public String toString() {
+        return "Menu{" +
+                "schoolName='" + schoolName + '\'' +
+                ", date='" + date + '\'' +
+                ", dayOfTheWeek='" + dayOfTheWeek + '\'' +
+                ", meal=" + meal +
+                '}';
+    }
 }
