@@ -76,7 +76,7 @@ class PolyMenuServiceTest {
         int dateIdx = 0;
 
         System.out.println("td.size() =" + td.size());
-        for (int i = 1; i < td.size(); i += 4) {
+        for (int i = 1; i < td.size() / 2; i += 4) {
             Menu menu = Menu.builder()
                     .schoolName(SchoolCode.POLY_CHANGWON.getSchoolName())
                     .date(thisWeekDateData.get(dateIdx))

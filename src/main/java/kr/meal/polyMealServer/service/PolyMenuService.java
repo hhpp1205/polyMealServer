@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
 @Slf4j
+@Service(value = "PolyMenuService")
 public class PolyMenuService extends AbstractMenuService {
 
     @Autowired
@@ -110,7 +110,7 @@ public class PolyMenuService extends AbstractMenuService {
                 log.warn("call crawlingMenu(), schoolCode={}, date={}", schoolCode, date);
         } catch (Exception e) {
             log.error("crawlingExeption, schoolCode={}, date={}", schoolCode, date);
-            log.error("{}", e);
+            log.error("", e);
         }
     }
 

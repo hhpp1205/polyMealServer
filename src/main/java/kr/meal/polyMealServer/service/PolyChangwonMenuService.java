@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 @Slf4j
-@Service
+@Service(value = "PolyChangwonMenuService")
 public class PolyChangwonMenuService extends AbstractMenuService {
 
     @Override
@@ -37,7 +37,7 @@ public class PolyChangwonMenuService extends AbstractMenuService {
 
             int dateIdx = 0;
 
-            for (int i = 1; i < td.size(); i += 4) {
+            for (int i = 1; i < td.size() / 2; i += 4) {
                 Menu menu = Menu.builder()
                         .schoolName(schoolCode.getSchoolName())
                         .date(thisWeekDateData.get(dateIdx))
