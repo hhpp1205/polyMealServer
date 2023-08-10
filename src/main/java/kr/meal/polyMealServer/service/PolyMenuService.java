@@ -54,7 +54,15 @@ public class PolyMenuService extends AbstractMenuService {
 
         crawlingMenu(schoolCode, date);
 
-        return menuMap.get(schoolCode).get(date);
+        Menu menu = menuMap.get(schoolCode).get(date);
+
+        // TODO: 2023/08/10 크롤링 할 페이지에 메뉴 테이블이 존재하지 않는다면 계속 계속 크롤링 하는 현상 수정 
+        // 크롤링 해도 null이라면 기본 menu 객체 반환
+        if(menu == null) {
+            log.warn("be null after crawling, schoolCode={}, data={}", schoolCode, date);
+            return Menu.ofEmptyMenu(schoolCode, date);
+        }
+        return menu;
     }
 
     private boolean isThisWeek(String date) {
