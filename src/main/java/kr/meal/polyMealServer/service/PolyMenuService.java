@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +49,7 @@ public class PolyMenuService extends AbstractMenuService {
         }
 
         //요청 날짜가 이번주가 아니라면 EmptyMenu return
-        if(!isThisWeek(date)) {
+        if(!isThisWeekOrTodaySunday(date)) {
             return Menu.ofEmptyMenu(schoolCode, date);
         }
 
@@ -56,17 +57,25 @@ public class PolyMenuService extends AbstractMenuService {
 
         Menu menu = menuMap.get(schoolCode).get(date);
 
-        // TODO: 2023/08/10 크롤링 할 페이지에 메뉴 테이블이 존재하지 않는다면 계속 계속 크롤링 하는 현상 수정 
+        // TODO: 2023/08/10 크롤링 할 페이지에 메뉴 테이블이 존재하지 않는다면 계속 계속 크롤링 하는 현상 수정
         // 크롤링 해도 null이라면 기본 menu 객체 반환
         if(menu == null) {
             log.warn("be null after crawling, schoolCode={}, data={}", schoolCode, date);
             return Menu.ofEmptyMenu(schoolCode, date);
         }
+
         return menu;
     }
 
-    private boolean isThisWeek(String date) {
+    private boolean isThisWeekOrTodaySunday(String date) {
         LocalDate requestDate = DateUtils.toLocalDate(date);
+
+        //오늘이 일요일인가?
+        DayOfWeek dayOfWeek = requestDate.getDayOfWeek();
+        if(dayOfWeek == DayOfWeek.SUNDAY) {
+            return true;
+        }
+
         LocalDate thisWeekLastDay = DateUtils.getThisWeekLastDay();
         LocalDate thisWeekFirstDay = DateUtils.getThisWeekFirstDay();
 
