@@ -1,13 +1,13 @@
 package kr.meal.polyMealServer.controller;
 
 import kr.meal.polyMealServer.dto.SchoolCode;
+import kr.meal.polyMealServer.util.SchoolNameComparator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,10 +16,10 @@ public class SchoolController {
 
     @GetMapping("/schools")
     public Map<String, String> getAllSchools() {
-        Map<String, String> schoolCodeMap = new HashMap<>();
+        Map<String, String> schoolCodeMap = new TreeMap<>();
 
         for(SchoolCode schoolCode : SchoolCode.values()) {
-            schoolCodeMap.put(schoolCode.getSchoolCode(), schoolCode.getSchoolName());
+            schoolCodeMap.put(schoolCode.getSchoolName(), schoolCode.getSchoolCode());
         }
 
         return schoolCodeMap;
