@@ -39,9 +39,8 @@ public class PolyChangwonMenuService extends AbstractMenuService {
 
             for (int i = 1; i < td.size() / 2; i += 4) {
                 Menu menu = Menu.builder()
-                        .schoolName(schoolCode.getSchoolName())
+                        .schoolCode(schoolCode)
                         .date(thisWeekDateData.get(dateIdx))
-                        .dayOfTheWeek(DAY_OF_THE_WEEK[dateIdx])
                         .meal(
                                 List.of(
                                         td.get(i).text(),

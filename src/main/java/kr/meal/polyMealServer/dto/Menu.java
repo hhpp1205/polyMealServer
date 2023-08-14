@@ -7,12 +7,18 @@ import java.util.List;
 
 @Getter
 public class Menu {
+    private String schoolCode;
     private String schoolName;
     private String date;
     private List<String> meal;
 
     @Builder
-    public Menu(String schoolName, String date, String dayOfTheWeek, List<String> meal) {
+    public Menu(SchoolCode schoolCode, String date, List<String> meal) {
+        this(schoolCode.getSchoolCode(), schoolCode.getSchoolName(), date, meal);
+    }
+
+    public Menu(String schoolCode, String schoolName, String date, List<String> meal) {
+        this.schoolCode = schoolCode;
         this.schoolName = schoolName;
         this.date = date;
         this.meal = meal;
@@ -21,7 +27,7 @@ public class Menu {
     public static Menu ofEmptyMenu(SchoolCode schoolCode, String date) {
         return Menu.builder()
                 .date(date)
-                .schoolName(schoolCode.getSchoolName())
+                .schoolCode(schoolCode)
                 .meal(List.of("", "", ""))
                 .build();
     }
