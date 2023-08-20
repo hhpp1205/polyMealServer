@@ -70,21 +70,18 @@ public class PolyMenuService extends AbstractMenuService {
     private boolean isThisWeekOrTodaySunday(String date) {
         LocalDate requestDate = DateUtils.toLocalDate(date);
 
-        //오늘이 일요일인가?
-        DayOfWeek dayOfWeek = requestDate.getDayOfWeek();
-        if(dayOfWeek == DayOfWeek.SUNDAY) {
-            return true;
-        }
-
         LocalDate thisWeekLastDay = DateUtils.getThisWeekLastDay();
         LocalDate thisWeekFirstDay = DateUtils.getThisWeekFirstDay();
 
-        // 다음주인가?
-        if(requestDate.isAfter(thisWeekLastDay)) {
-            return false;
+        boolean isNotThisWeek = requestDate.isAfter(thisWeekLastDay) || requestDate.isBefore(thisWeekFirstDay);
+
+        // 일요일인가?
+        if(thisWeekLastDay.toString() == date) {
+            return true;
         }
-        //저번주인가?
-        if(requestDate.isBefore(thisWeekFirstDay)) {
+
+        // 이번주가 아닌가?
+        if(isNotThisWeek) {
             return false;
         }
 
