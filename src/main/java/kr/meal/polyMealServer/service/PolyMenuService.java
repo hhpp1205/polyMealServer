@@ -44,7 +44,7 @@ public class PolyMenuService extends AbstractMenuService {
     public Menu getMenu(SchoolCode schoolCode, String date) {
         if(menuMap != null && menuMap.get(schoolCode).get(date) != null) {
             //맵에 데이터가 있다면 찾아서 return
-            log.info("manuMap get({})", date);
+            log.info("manuMap get(schoolCode={}, data={})", schoolCode, date);
             return menuMap.get(schoolCode).get(date);
         }
 
