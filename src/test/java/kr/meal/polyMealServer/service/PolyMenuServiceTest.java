@@ -95,7 +95,7 @@ class PolyMenuServiceTest {
     @DisplayName("")
     @Test
     void test7() {
-        polyMenuService.getMenu(SchoolCode.POLY_DEAJEON, "2023-08-06");
+        polyMenuService.getMenu(SchoolCode.POLY_ROBOT, "2023-08-29");
     }
 
 
