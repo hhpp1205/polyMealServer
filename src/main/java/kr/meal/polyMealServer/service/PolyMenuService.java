@@ -11,11 +11,12 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service(value = "PolyMenuService")
@@ -25,25 +26,42 @@ public class PolyMenuService extends AbstractMenuService {
     PolyChangwonMenuService polyChangwonMenuService;
 
     @PostConstruct
-    public void init() {
+    public void menuMapInitialValueSettings() throws InterruptedException {
+        int schoolCodeLength = SchoolCode.values().length - 1;
+        ExecutorService executorService = Executors.newFixedThreadPool(schoolCodeLength);
+        CountDownLatch countDownLatch = new CountDownLatch(schoolCodeLength);
+
         for(SchoolCode schoolCode : SchoolCode.values()) {
-            menuMap.put(schoolCode, new HashMap<>());
-            LocalDate now = LocalDate.now();
-
-            if(schoolCode == SchoolCode.POLY_CHANGWON) {
-                polyChangwonMenuService.crawlingMenu(schoolCode, now.toString());
-                continue;
-            }
-
-            crawlingMenu(schoolCode, now.toString());
+            executorService.submit(createRunnableOfCrawlingMenuAndCountDown(countDownLatch, schoolCode));
         }
+
+        if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
+            executorService.shutdownNow();
+        }
+
+        countDownLatch.await();
     }
 
+    private Runnable createRunnableOfCrawlingMenuAndCountDown(CountDownLatch countDownLatch, SchoolCode schoolCode) {
+        return () -> {
+            menuMap.put(schoolCode, new HashMap<>());
+
+            LocalDate now = LocalDate.now();
+
+            if (schoolCode == SchoolCode.POLY_CHANGWON) {
+                polyChangwonMenuService.crawlingMenuAndPutMenuMap(schoolCode, now.toString());
+                return;
+            }
+
+            crawlingMenuAndPutMenuMap(schoolCode, now.toString());
+            countDownLatch.countDown();
+
+        };
+    }
 
     @Override
     public Menu getMenu(SchoolCode schoolCode, String date) {
-        if(menuMap != null && menuMap.get(schoolCode).get(date) != null) {
-            //맵에 데이터가 있다면 찾아서 return
+        if(isExistMenu(schoolCode, date)) {
             log.info("manuMap get(schoolCode={}, data={})", schoolCode, date);
             return menuMap.get(schoolCode).get(date);
         }
@@ -53,7 +71,7 @@ public class PolyMenuService extends AbstractMenuService {
             return Menu.ofEmptyMenu(schoolCode, date);
         }
 
-        crawlingMenu(schoolCode, date);
+        crawlingMenuAndPutMenuMap(schoolCode, date);
 
         Menu menu = menuMap.get(schoolCode).get(date);
 
@@ -65,6 +83,10 @@ public class PolyMenuService extends AbstractMenuService {
         return menu;
     }
 
+    private boolean isExistMenu(SchoolCode schoolCode, String date) {
+        return menuMap != null && menuMap.get(schoolCode).get(date) != null;
+    }
+
     private boolean isThisWeekOrTodaySunday(String date) {
         LocalDate requestDate = DateUtils.toLocalDate(date);
 
@@ -73,11 +95,10 @@ public class PolyMenuService extends AbstractMenuService {
 
         boolean isNotThisWeek = requestDate.isAfter(thisWeekLastDay) || requestDate.isBefore(thisWeekFirstDay);
 
-        // 일요일인가?
+        // 이번주 일요일인가?
         if(thisWeekLastDay.toString() == date) {
             return true;
         }
-
         // 이번주가 아닌가?
         if(isNotThisWeek) {
             return false;
@@ -87,43 +108,47 @@ public class PolyMenuService extends AbstractMenuService {
     }
 
     @Override
-    protected void crawlingMenu(SchoolCode schoolCode, String date) {
+    protected void crawlingMenuAndPutMenuMap(SchoolCode schoolCode, String date) {
+        Elements elementsOfMenu = getElementsOfMenu(schoolCode);
+        if(elementsOfMenu == null || elementsOfMenu.size() == 0) {
+            return;
+        }
+
+        Map<String, Menu> dateManuMap = new HashMap<>();
+
+        List<String> thisWeekDateData = elementsOfMenu.select("script").stream()
+                .map(dateTag -> dateTag.toString().substring(32, 42)).toList();
+
+        int dateIdx = 0;
+
+        for (int i = 1; i < elementsOfMenu.size(); i += 4) {
+            Menu menu = Menu.builder()
+                    .schoolCode(schoolCode)
+                    .date(thisWeekDateData.get(dateIdx))
+                    .meal(
+                            List.of(
+                                    elementsOfMenu.get(i).text(),
+                                    elementsOfMenu.get(i + 1).text(),
+                                    elementsOfMenu.get(i + 2).text()
+                            )
+                    )
+                    .build();
+
+            dateManuMap.put(thisWeekDateData.get(dateIdx++), menu);
+            menuMap.put(schoolCode, dateManuMap);
+        }
+    }
+
+    private Elements getElementsOfMenu(SchoolCode schoolCode) {
         try {
             Document doc = Jsoup.connect(schoolCode.getUrl()).get();
-            Elements menuTags = doc.select(".menu tr");
-            Elements td = menuTags.select("td");
-
-            if(td.size() == 0) {
-                return;
-            }
-
-            Map<String, Menu> dateManuMap = new HashMap<>();
-
-            List<String> thisWeekDateData = menuTags.select("script").stream()
-                    .map(dateTag -> dateTag.toString().substring(32, 42)).toList();
-
-            int dateIdx = 0;
-
-            for (int i = 1; i < td.size(); i += 4) {
-                Menu menu = Menu.builder()
-                        .schoolCode(schoolCode)
-                        .date(thisWeekDateData.get(dateIdx))
-                        .meal(
-                                List.of(
-                                        td.get(i).text(),
-                                        td.get(i + 1).text(),
-                                        td.get(i + 2).text()
-                                )
-                        )
-                        .build();
-
-                dateManuMap.put(thisWeekDateData.get(dateIdx++), menu);
-                menuMap.put(schoolCode, dateManuMap);
-            }
-                log.warn("call crawlingMenu(), schoolCode={}, date={}", schoolCode, date);
+            Elements menuTags = doc.select(".menu tbody tr");
+            Elements tdOfMenu = menuTags.select("td");
+            return tdOfMenu;
         } catch (Exception e) {
-            log.error("crawlingExeption, schoolCode={}, date={}", schoolCode, date);
+            log.error("crawlingExeption, schoolCode={}", schoolCode);
             log.error("", e);
+            return null;
         }
     }
 

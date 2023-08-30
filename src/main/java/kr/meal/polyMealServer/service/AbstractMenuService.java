@@ -3,8 +3,8 @@ package kr.meal.polyMealServer.service;
 import kr.meal.polyMealServer.dto.Menu;
 import kr.meal.polyMealServer.dto.SchoolCode;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractMenuService {
 
@@ -14,9 +14,9 @@ public abstract class AbstractMenuService {
      * SchoolCode 학교
      * String 날짜  ex) 2023-08-02
      */
-    protected static Map<SchoolCode, Map<String, Menu>> menuMap = new HashMap<>();
+    protected static Map<SchoolCode, Map<String, Menu>> menuMap = new ConcurrentHashMap<>();
 
-    abstract void crawlingMenu(SchoolCode schoolCode, String date);
+    abstract void crawlingMenuAndPutMenuMap(SchoolCode schoolCode, String date);
 
     abstract Menu getMenu(SchoolCode schoolCode, String date);
 }

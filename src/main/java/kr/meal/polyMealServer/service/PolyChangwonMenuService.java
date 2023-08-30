@@ -21,7 +21,7 @@ public class PolyChangwonMenuService extends AbstractMenuService {
     }
 
     @Override
-    protected void crawlingMenu(SchoolCode schoolCode, String date) {
+    protected void crawlingMenuAndPutMenuMap(SchoolCode schoolCode, String date) {
         // TODO: 2023/08/09 창원 식당은 제1식당과 제2식당 메뉴가 다름 
         try {
             Document doc = Jsoup.connect(schoolCode.getUrl()).get();
