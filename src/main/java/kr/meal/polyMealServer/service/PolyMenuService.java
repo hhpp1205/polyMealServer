@@ -3,7 +3,6 @@ package kr.meal.polyMealServer.service;
 import jakarta.annotation.PostConstruct;
 import kr.meal.polyMealServer.dto.Menu;
 import kr.meal.polyMealServer.dto.SchoolCode;
-import kr.meal.polyMealServer.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,7 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@Service(value = "PolyMenuService")
+@Service(value = "polyMenuService")
 public class PolyMenuService extends AbstractMenuService {
 
     @Autowired
@@ -60,55 +59,7 @@ public class PolyMenuService extends AbstractMenuService {
     }
 
     @Override
-    public Menu getMenu(SchoolCode schoolCode, String date) {
-        if(isExistMenu(schoolCode, date)) {
-            log.info("manuMap get(schoolCode={}, data={})", schoolCode, date);
-            return menuMap.get(schoolCode).get(date);
-        }
-
-        //요청 날짜가 이번주가 아니라면 EmptyMenu return
-        if(!isThisWeekOrTodaySunday(date)) {
-            return Menu.ofEmptyMenu(schoolCode, date);
-        }
-
-        crawlingMenuAndPutMenuMap(schoolCode, date);
-
-        Menu menu = menuMap.get(schoolCode).get(date);
-
-        if(menu == null) {
-            log.warn("be null after crawling, schoolCode={}, data={}", schoolCode, date);
-            return Menu.ofEmptyMenu(schoolCode, date);
-        }
-
-        return menu;
-    }
-
-    private boolean isExistMenu(SchoolCode schoolCode, String date) {
-        return menuMap != null && menuMap.get(schoolCode).get(date) != null;
-    }
-
-    private boolean isThisWeekOrTodaySunday(String date) {
-        LocalDate requestDate = DateUtils.toLocalDate(date);
-
-        LocalDate thisWeekLastDay = DateUtils.getThisWeekLastDay();
-        LocalDate thisWeekFirstDay = DateUtils.getThisWeekFirstDay();
-
-        boolean isNotThisWeek = requestDate.isAfter(thisWeekLastDay) || requestDate.isBefore(thisWeekFirstDay);
-
-        // 이번주 일요일인가?
-        if(thisWeekLastDay.toString() == date) {
-            return true;
-        }
-        // 이번주가 아닌가?
-        if(isNotThisWeek) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    protected void crawlingMenuAndPutMenuMap(SchoolCode schoolCode, String date) {
+    public void crawlingMenuAndPutMenuMap(SchoolCode schoolCode, String date) {
         Elements elementsOfMenu = getElementsOfMenu(schoolCode);
         if(elementsOfMenu == null || elementsOfMenu.size() == 0) {
             return;
