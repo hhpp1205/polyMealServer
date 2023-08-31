@@ -12,40 +12,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 @Slf4j
-@Service(value = "PolyChangwonMenuService")
+@Service(value = "polyChangwonMenuService")
 public class PolyChangwonMenuService extends AbstractMenuService {
 
     @Override
-    Menu getMenu(SchoolCode schoolCode, String date) {
-        return null;
-    }
-
-    @Override
-    protected void crawlingMenuAndPutMenuMap(SchoolCode schoolCode, String date) {
+    public void crawlingMenuAndPutMenuMap(SchoolCode schoolCode, String date) {
         // TODO: 2023/08/09 창원 식당은 제1식당과 제2식당 메뉴가 다름 
         try {
-            Document doc = Jsoup.connect(schoolCode.getUrl()).get();
-
-            Elements menuTags = doc.select(".menu tr");
+            Elements elementsOfMenu = getElementsOfMenu(schoolCode);
+            if(elementsOfMenu == null || elementsOfMenu.size() == 0) {
+                return;
+            }
 
             Map<String, Menu> dateManuMap = new HashMap<>();
 
-            Elements td = menuTags.select("td");
-
-            List<String> thisWeekDateData = menuTags.select("script").stream()
+            List<String> thisWeekDateData = elementsOfMenu.select("script").stream()
                     .map(dateTag -> dateTag.toString().substring(32, 42)).toList();
 
             int dateIdx = 0;
 
-            for (int i = 1; i < td.size() / 2; i += 4) {
+            for (int i = 1; i < elementsOfMenu.size() / 2; i += 4) {
                 Menu menu = Menu.builder()
                         .schoolCode(schoolCode)
                         .date(thisWeekDateData.get(dateIdx))
                         .meal(
                                 List.of(
-                                        td.get(i).text(),
-                                        td.get(i + 1).text(),
-                                        td.get(i + 2).text()
+                                        elementsOfMenu.get(i).text(),
+                                        elementsOfMenu.get(i + 1).text(),
+                                        elementsOfMenu.get(i + 2).text()
                                 )
                         )
                         .build();
@@ -57,6 +51,19 @@ public class PolyChangwonMenuService extends AbstractMenuService {
         } catch (Exception e) {
             log.error("crawlingExeption, schoolCode={}, date={}", schoolCode, date);
             log.error("{}", e);
+        }
+    }
+
+    private Elements getElementsOfMenu(SchoolCode schoolCode) {
+        try {
+            Document doc = Jsoup.connect(schoolCode.getUrl()).get();
+            Elements menuTags = doc.select(".menu tbody tr");
+            Elements tdOfMenu = menuTags.select("td");
+            return tdOfMenu;
+        } catch (Exception e) {
+            log.error("crawlingExeption, schoolCode={}", schoolCode);
+            log.error("", e);
+            return null;
         }
     }
 }

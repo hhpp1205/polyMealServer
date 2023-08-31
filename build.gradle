@@ -25,6 +25,9 @@ dependencies {
 	//spring
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
+	// mariaDB
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
 	//jsoup
 	implementation 'org.jsoup:jsoup:1.16.1'
 
@@ -34,6 +37,8 @@ dependencies {
 
 	//test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+
 }
 
 tasks.named('test') {
