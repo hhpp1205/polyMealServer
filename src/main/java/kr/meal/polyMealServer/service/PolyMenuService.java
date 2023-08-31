@@ -27,7 +27,7 @@ public class PolyMenuService extends AbstractMenuService {
 
     @PostConstruct
     public void menuMapInitialValueSettings() throws InterruptedException {
-        int schoolCodeLength = SchoolCode.values().length - 1;
+        int schoolCodeLength = SchoolCode.values().length;
         ExecutorService executorService = Executors.newFixedThreadPool(schoolCodeLength);
         CountDownLatch countDownLatch = new CountDownLatch(schoolCodeLength);
 
@@ -50,12 +50,12 @@ public class PolyMenuService extends AbstractMenuService {
 
             if (schoolCode == SchoolCode.POLY_CHANGWON) {
                 polyChangwonMenuService.crawlingMenuAndPutMenuMap(schoolCode, now.toString());
+                countDownLatch.countDown();
                 return;
             }
 
             crawlingMenuAndPutMenuMap(schoolCode, now.toString());
             countDownLatch.countDown();
-
         };
     }
 
@@ -137,6 +137,7 @@ public class PolyMenuService extends AbstractMenuService {
             dateManuMap.put(thisWeekDateData.get(dateIdx++), menu);
             menuMap.put(schoolCode, dateManuMap);
         }
+        log.warn("call crawlingMenu(), schoolCode={}, date={}", schoolCode, date);
     }
 
     private Elements getElementsOfMenu(SchoolCode schoolCode) {
