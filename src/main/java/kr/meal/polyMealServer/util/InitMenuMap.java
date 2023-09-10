@@ -3,6 +3,7 @@ package kr.meal.polyMealServer.util;
 import jakarta.annotation.PostConstruct;
 import kr.meal.polyMealServer.dto.SchoolCode;
 import kr.meal.polyMealServer.service.AbstractMenuService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -17,7 +18,8 @@ import static kr.meal.polyMealServer.service.AbstractMenuService.menuMap;
 @Component
 public class InitMenuMap {
 
-    private final PolyMenuServiceFactory polyMenuServiceFactory = new PolyMenuServiceFactory();
+    @Autowired
+    private PolyMenuServiceFactory polyMenuServiceFactory;
 
     @PostConstruct
     public void menuMapInitialValueSettings() throws InterruptedException {

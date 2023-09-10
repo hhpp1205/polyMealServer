@@ -1,6 +1,5 @@
 package kr.meal.polyMealServer.service;
 
-import jakarta.annotation.PostConstruct;
 import kr.meal.polyMealServer.dto.Menu;
 import kr.meal.polyMealServer.dto.SchoolCode;
 import lombok.extern.slf4j.Slf4j;
@@ -10,53 +9,13 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 @Slf4j
 @Service(value = "polyMenuService")
 public class PolyMenuService extends AbstractMenuService {
 
     @Autowired
     PolyChangwonMenuService polyChangwonMenuService;
-
-    @PostConstruct
-    public void menuMapInitialValueSettings() throws InterruptedException {
-        int schoolCodeLength = SchoolCode.values().length;
-        ExecutorService executorService = Executors.newFixedThreadPool(schoolCodeLength);
-        CountDownLatch countDownLatch = new CountDownLatch(schoolCodeLength);
-
-        for(SchoolCode schoolCode : SchoolCode.values()) {
-            executorService.submit(createRunnableOfCrawlingMenuAndCountDown(countDownLatch, schoolCode));
-        }
-
-        if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
-            executorService.shutdownNow();
-        }
-
-        countDownLatch.await();
-    }
-
-    private Runnable createRunnableOfCrawlingMenuAndCountDown(CountDownLatch countDownLatch, SchoolCode schoolCode) {
-        return () -> {
-            menuMap.put(schoolCode, new HashMap<>());
-
-            LocalDate now = LocalDate.now();
-
-            if (schoolCode == SchoolCode.POLY_CHANGWON) {
-                polyChangwonMenuService.crawlingMenuAndPutMenuMap(schoolCode, now.toString());
-                countDownLatch.countDown();
-                return;
-            }
-
-            crawlingMenuAndPutMenuMap(schoolCode, now.toString());
-            countDownLatch.countDown();
-        };
-    }
 
     @Override
     public void crawlingMenuAndPutMenuMap(SchoolCode schoolCode, String date) {
