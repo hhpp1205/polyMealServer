@@ -25,9 +25,6 @@ dependencies {
 	//spring
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	// mariaDB
-	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-
 	//jsoup
 	implementation 'org.jsoup:jsoup:1.16.1'
 
