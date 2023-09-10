@@ -96,7 +96,7 @@ public class PolyMenuService extends AbstractMenuService {
         boolean isNotThisWeek = requestDate.isAfter(thisWeekLastDay) || requestDate.isBefore(thisWeekFirstDay);
 
         // 이번주 일요일인가?
-        if(thisWeekLastDay.toString() == date) {
+        if(thisWeekLastDay.toString().equals(date)) {
             return true;
         }
         // 이번주가 아닌가?
