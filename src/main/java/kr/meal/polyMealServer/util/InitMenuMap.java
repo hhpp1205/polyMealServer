@@ -3,6 +3,9 @@ package kr.meal.polyMealServer.util;
 import jakarta.annotation.PostConstruct;
 import kr.meal.polyMealServer.dto.SchoolCode;
 import kr.meal.polyMealServer.service.AbstractMenuService;
+import kr.meal.polyMealServer.service.CrawlingMenuService;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +23,8 @@ public class InitMenuMap {
 
     @Autowired
     private PolyMenuServiceFactory polyMenuServiceFactory;
+    @Autowired
+    private CrawlingMenuService crawlingMenuService;
 
     @PostConstruct
     public void menuMapInitialValueSettings() throws InterruptedException {
@@ -45,7 +50,11 @@ public class InitMenuMap {
             LocalDate now = LocalDate.now();
 
             AbstractMenuService polyMenuService = polyMenuServiceFactory.polyMenuServiceFactory(schoolCode);
-            polyMenuService.crawlingMenuAndPutMenuMap(schoolCode, now.toString());
+
+            Document menuPageDocument = crawlingMenuService.crawlingMenuPageGet(schoolCode);
+            Elements menuElements = polyMenuService.extractMenuElements(menuPageDocument);
+
+            polyMenuService.makeMenuAndPutMenuMap(menuElements, schoolCode, now.toString());
 
             countDownLatch.countDown();
         };

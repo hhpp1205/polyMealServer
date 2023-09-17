@@ -28,4 +28,14 @@ public class DateUtils {
         LocalDate firstDayOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         return firstDayOfWeek;
     }
+
+    public static LocalDate getLastWeekLastDay() {
+        LocalDate getThisWeekLastDay = getThisWeekLastDay();
+        return getThisWeekLastDay.minusWeeks(1);
+    }
+
+    public static LocalDate getLastWeekFirstDay() {
+        LocalDate thisWeekFirstDay = getThisWeekFirstDay();
+        return thisWeekFirstDay.minusWeeks(1);
+    }
 }
