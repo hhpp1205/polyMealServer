@@ -24,7 +24,7 @@ public class MenuController {
      * @param date ex) 2023-07-24
      */
     @GetMapping("/menus")
-    public Menu getMenu(@RequestParam SchoolCode schoolCode, @RequestParam String date ) throws IOException {
+    public Menu getMenu(@RequestParam SchoolCode schoolCode, @RequestParam String date ) {
         return polyMenuService.getMenu(schoolCode, date);
     }
 

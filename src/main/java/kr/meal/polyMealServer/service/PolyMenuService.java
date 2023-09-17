@@ -2,20 +2,19 @@ package kr.meal.polyMealServer.service;
 
 import kr.meal.polyMealServer.dto.Menu;
 import kr.meal.polyMealServer.dto.SchoolCode;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 @Slf4j
 @Service(value = "polyMenuService")
+@RequiredArgsConstructor
 public class PolyMenuService extends AbstractMenuService {
 
-    @Autowired
-    PolyChangwonMenuService polyChangwonMenuService;
+    private final CrawlingMenuService crawlingMenuService;
 
     @Override
     public void crawlingMenuAndPutMenuMap(SchoolCode schoolCode, String date) {
@@ -51,16 +50,10 @@ public class PolyMenuService extends AbstractMenuService {
     }
 
     private Elements getElementsOfMenu(SchoolCode schoolCode) {
-        try {
-            Document doc = Jsoup.connect(schoolCode.getUrl()).get();
-            Elements menuTags = doc.select(".menu tbody tr");
-            Elements tdOfMenu = menuTags.select("td");
-            return tdOfMenu;
-        } catch (Exception e) {
-            log.error("crawlingExeption, schoolCode={}", schoolCode);
-            log.error("", e);
-            return null;
-        }
+        Document document = crawlingMenuService.crawlingMenuPageGet(schoolCode);
+        Elements menuTags = document.select(".menu tbody tr");
+        Elements tdOfMenu = menuTags.select("td");
+        return tdOfMenu;
     }
 
 }

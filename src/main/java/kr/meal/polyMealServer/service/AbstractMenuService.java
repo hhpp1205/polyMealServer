@@ -11,8 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public abstract class AbstractMenuService {
 
-    protected final String[] DAY_OF_THE_WEEK =  {"월","화","수","목","금","토","일"};
-
     /**
      * SchoolCode 학교
      * String 날짜  ex) 2023-08-02
