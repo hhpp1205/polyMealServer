@@ -4,11 +4,15 @@ import kr.meal.polyMealServer.dto.Menu;
 import kr.meal.polyMealServer.dto.SchoolCode;
 import kr.meal.polyMealServer.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
+@Service
 public abstract class AbstractMenuService {
 
     /**
@@ -16,8 +20,9 @@ public abstract class AbstractMenuService {
      * String 날짜  ex) 2023-08-02
      */
     public static Map<SchoolCode, Map<String, Menu>> menuMap = new ConcurrentHashMap<>();
+    protected CrawlingMenuService crawlingMenuService = new CrawlingMenuService();
 
-    public abstract void crawlingMenuAndPutMenuMap(SchoolCode schoolCode, String date);
+    public abstract void makeMenuAndPutMenuMap(Elements elementsOfMenu, SchoolCode schoolCode, String date);
 
     public Menu getMenu(SchoolCode schoolCode, String date) {
         if(isExistMenu(schoolCode, date)) {
@@ -25,12 +30,18 @@ public abstract class AbstractMenuService {
             return menuMap.get(schoolCode).get(date);
         }
 
-        //요청 날짜가 이번주가 아니라면 EmptyMenu return
-        if(!isThisWeekOrTodaySunday(date)) {
+        // 저번주 보다 과거 날짜의 메뉴 요청이라면 return EmptyMenu
+        if(isPastDateFromLastWeek(date)) {
             return Menu.ofEmptyMenu(schoolCode, date);
         }
 
-        crawlingMenuAndPutMenuMap(schoolCode, date);
+        Document menuPageDocument = crawlingMenuService.crawlingMenuPagePost(schoolCode, date);
+        Elements elementsOfMenu = extractMenuElements(menuPageDocument);
+        if(elementsOfMenu == null || elementsOfMenu.size() == 0) {
+            return Menu.ofEmptyMenu(schoolCode, date);
+        }
+
+        makeMenuAndPutMenuMap(elementsOfMenu, schoolCode, date);
 
         Menu menu = menuMap.get(schoolCode).get(date);
 
@@ -40,29 +51,22 @@ public abstract class AbstractMenuService {
         }
 
         return menu;
-    };
+    }
 
     private boolean isExistMenu(SchoolCode schoolCode, String date) {
         return menuMap != null && menuMap.get(schoolCode).get(date) != null;
     }
 
-    private boolean isThisWeekOrTodaySunday(String date) {
+    private boolean isPastDateFromLastWeek(String date) {
         LocalDate requestDate = DateUtils.toLocalDate(date);
+        LocalDate lastWeekFirstDay = DateUtils.getLastWeekFirstDay();
 
-        LocalDate thisWeekLastDay = DateUtils.getThisWeekLastDay();
-        LocalDate thisWeekFirstDay = DateUtils.getThisWeekFirstDay();
+        return requestDate.isBefore(lastWeekFirstDay);
+    }
 
-        boolean isNotThisWeek = requestDate.isAfter(thisWeekLastDay) || requestDate.isBefore(thisWeekFirstDay);
-
-        // 이번주 일요일인가?
-        if(thisWeekLastDay.toString().equals(date)) {
-            return true;
-        }
-        // 이번주가 아닌가?
-        if(isNotThisWeek) {
-            return false;
-        }
-
-        return true;
+    public Elements extractMenuElements(Document menuPageDocument) {
+        Elements menuTags = menuPageDocument.select(".menu tbody tr");
+        Elements menuElements = menuTags.select("td");
+        return menuElements;
     }
 }
