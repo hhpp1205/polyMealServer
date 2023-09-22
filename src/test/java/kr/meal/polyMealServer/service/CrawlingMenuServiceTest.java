@@ -12,15 +12,4 @@ class CrawlingMenuServiceTest {
 
     @Autowired
     CrawlingMenuService crawlingMenuService;
-
-    @Test
-    void crawlingMenuPageGet() {
-
-    }
-
-    @Test
-    void crawlingMenuPagePost() {
-        Document document = crawlingMenuService.crawlingMenuPagePost(SchoolCode.POLY_DEAJEON, "2023-09-18");
-        System.out.println("document = " + document);
-    }
 }

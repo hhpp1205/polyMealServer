@@ -17,25 +17,25 @@ public class DateUtils {
      * 일요일이 마지막으로 가정
      * @return 이번주의 마지막 날짜
      */
-    public static LocalDate getThisWeekLastDay() {
-        LocalDate today = LocalDate.now();
+    public static LocalDate getThisWeekLastDay(String date) {
+        LocalDate today = toLocalDate(date);
         LocalDate lastDayOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
         return lastDayOfWeek;
     }
 
-    public static LocalDate getThisWeekFirstDay() {
-        LocalDate today = LocalDate.now();
+    public static LocalDate getThisWeekFirstDay(String date) {
+        LocalDate today = toLocalDate(date);
         LocalDate firstDayOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         return firstDayOfWeek;
     }
 
-    public static LocalDate getLastWeekLastDay() {
-        LocalDate getThisWeekLastDay = getThisWeekLastDay();
+    public static LocalDate getLastWeekLastDay(String date) {
+        LocalDate getThisWeekLastDay = getThisWeekLastDay(date);
         return getThisWeekLastDay.minusWeeks(1);
     }
 
-    public static LocalDate getLastWeekFirstDay() {
-        LocalDate thisWeekFirstDay = getThisWeekFirstDay();
+    public static LocalDate getLastWeekFirstDay(String date) {
+        LocalDate thisWeekFirstDay = getThisWeekFirstDay(date);
         return thisWeekFirstDay.minusWeeks(1);
     }
 }
