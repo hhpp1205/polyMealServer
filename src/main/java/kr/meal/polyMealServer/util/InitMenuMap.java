@@ -7,6 +7,7 @@ import kr.meal.polyMealServer.service.CrawlingMenuService;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import static kr.meal.polyMealServer.service.AbstractMenuService.menuMap;
 
 @Component
+@Profile("dev")
 public class InitMenuMap {
 
     @Autowired
