@@ -4,27 +4,25 @@ import jakarta.annotation.PostConstruct;
 import kr.meal.polyMealServer.dto.SchoolCode;
 import kr.meal.polyMealServer.service.AbstractMenuService;
 import kr.meal.polyMealServer.service.CrawlingMenuService;
+import lombok.RequiredArgsConstructor;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
-import static kr.meal.polyMealServer.service.AbstractMenuService.menuMap;
-
 @Component
+@RequiredArgsConstructor
+@Profile("product")
 public class InitMenuMap {
 
-    @Autowired
-    private PolyMenuServiceFactory polyMenuServiceFactory;
-    @Autowired
-    private CrawlingMenuService crawlingMenuService;
+    private final PolyMenuServiceFactory polyMenuServiceFactory;
+    private final CrawlingMenuService crawlingMenuService;
+    private final MenuMap menuMap = MenuMap.getMenuMap();
 
     @PostConstruct
     public void menuMapInitialValueSettings() throws InterruptedException {
@@ -45,7 +43,7 @@ public class InitMenuMap {
 
     private Runnable createRunnableOfCrawlingMenuAndCountDown(CountDownLatch countDownLatch, SchoolCode schoolCode) {
         return () -> {
-            menuMap.put(schoolCode, new HashMap<>());
+            menuMap.putSchoolEmptyMap(schoolCode);
 
             LocalDate now = LocalDate.now();
 

@@ -36,7 +36,7 @@ public class PolyChangwonMenuService extends AbstractMenuService {
                     )
                     .build();
 
-            menuMap.get(schoolCode).put(weekDateString.get(dateIdx++), menu);
+            menuMap.putMenu(schoolCode, weekDateString.get(dateIdx++), menu);
         }
         log.warn("call crawlingMenu(), schoolCode={}, date={}", schoolCode, date);
     }
