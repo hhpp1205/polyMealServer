@@ -23,6 +23,9 @@ public class MenuMap {
     }
 
     public void putMenu(SchoolCode schoolCode, String date, Menu menu) {
+        if (menuMap.get(schoolCode) == null) {
+            putSchoolEmptyMap(schoolCode);
+        }
         menuMap.get(schoolCode).put(date, menu);
     }
 

@@ -1,11 +1,11 @@
 package kr.meal.polyMealServer.service;
 
 import kr.meal.polyMealServer.dto.Menu;
+import kr.meal.polyMealServer.dto.MenuSearchParam;
 import kr.meal.polyMealServer.dto.SchoolCode;
 import kr.meal.polyMealServer.util.DateUtils;
 import kr.meal.polyMealServer.util.MenuMap;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
@@ -23,46 +23,40 @@ public abstract class AbstractMenuService {
 
     public abstract void makeMenuAndPutMenuMap(Elements elementsOfMenu, SchoolCode schoolCode, String date);
 
-    public Menu getMenu(SchoolCode schoolCode, String date) {
-        if (menuMap.isExistMenu(schoolCode, date)) {
-            log.info("manuMap get(schoolCode={}, data={})", schoolCode, date);
-            return menuMap.get(schoolCode, date);
+    public Menu getMenu(MenuSearchParam request) {
+        if (menuMap.isExistMenu(request.getSchoolCode(), request.getDate())) {
+            log.info("manuMap get(schoolCode={}, data={})", request.getSchoolCode(), request.getDate());
+            return menuMap.get(request.getSchoolCode(), request.getDate());
         }
 
 
         // 저번주 보다 과거 날짜의 메뉴 요청이라면 return EmptyMenu
-        if(isPastDateFromLastWeek(date)) {
-            return Menu.ofEmptyMenu(schoolCode, date);
+        if(isPastDateFromLastWeek(request.getDate(), request.getNowDate())) {
+            return Menu.ofEmptyMenu(request.getSchoolCode(), request.getDate());
         }
 
-        Elements elementsOfMenu = crawlingMenuService.getMenuElements(schoolCode, date);
+        Elements elementsOfMenu = crawlingMenuService.getMenuElements(request.getSchoolCode(), request.getDate());
         if(elementsOfMenu == null || elementsOfMenu.size() == 0) {
-            return Menu.ofEmptyMenu(schoolCode, date);
+            return Menu.ofEmptyMenu(request.getSchoolCode(), request.getDate());
         }
 
-        makeMenuAndPutMenuMap(elementsOfMenu, schoolCode, date);
+        makeMenuAndPutMenuMap(elementsOfMenu, request.getSchoolCode(), request.getDate());
 
-        Menu menu = menuMap.get(schoolCode, date);
+        Menu menu = menuMap.get(request.getSchoolCode(), request.getDate());
 
         if(menu == null) {
-            log.warn("be null after crawling, schoolCode={}, data={}", schoolCode, date);
-            return Menu.ofEmptyMenu(schoolCode, date);
+            log.warn("be null after crawling, schoolCode={}, data={}", request.getSchoolCode(), request.getDate());
+            return Menu.ofEmptyMenu(request.getSchoolCode(), request.getDate());
         }
 
         return menu;
     }
 
-    private boolean isPastDateFromLastWeek(String date) {
+    private boolean isPastDateFromLastWeek(String date, LocalDate nowDate) {
         LocalDate requestDate = DateUtils.toLocalDate(date);
-        LocalDate lastWeekFirstDay = DateUtils.getLastWeekFirstDay(date);
+        LocalDate lastWeekFirstDay = DateUtils.getLastWeekFirstDay(nowDate.toString());
 
         return requestDate.isBefore(lastWeekFirstDay);
     }
 
-    public Elements extractMenuElements(Document menuPageDocument) {
-        Elements menuTags = menuPageDocument.select(".menu tbody tr");
-        Elements menuElements = menuTags.select("td");
-        return menuElements;
-    }
-    
 }
