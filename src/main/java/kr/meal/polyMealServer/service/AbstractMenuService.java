@@ -35,8 +35,7 @@ public abstract class AbstractMenuService {
             return Menu.ofEmptyMenu(schoolCode, date);
         }
 
-        Document menuPageDocument = crawlingMenuService.crawlingMenuPagePost(schoolCode, date);
-        Elements elementsOfMenu = extractMenuElements(menuPageDocument);
+        Elements elementsOfMenu = crawlingMenuService.getMenuElements(schoolCode, date);
         if(elementsOfMenu == null || elementsOfMenu.size() == 0) {
             return Menu.ofEmptyMenu(schoolCode, date);
         }
@@ -65,4 +64,5 @@ public abstract class AbstractMenuService {
         Elements menuElements = menuTags.select("td");
         return menuElements;
     }
+    
 }

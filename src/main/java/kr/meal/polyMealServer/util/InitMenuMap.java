@@ -49,8 +49,7 @@ public class InitMenuMap {
 
             AbstractMenuService polyMenuService = polyMenuServiceFactory.polyMenuServiceFactory(schoolCode);
 
-            Document menuPageDocument = crawlingMenuService.crawlingMenuPageGet(schoolCode);
-            Elements menuElements = polyMenuService.extractMenuElements(menuPageDocument);
+            Elements menuElements = crawlingMenuService.getMenuElements(schoolCode);
 
             polyMenuService.makeMenuAndPutMenuMap(menuElements, schoolCode, now.toString());
 

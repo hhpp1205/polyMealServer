@@ -2,8 +2,6 @@ package kr.meal.polyMealServer.service;
 
 import kr.meal.polyMealServer.dto.Menu;
 import kr.meal.polyMealServer.dto.SchoolCode;
-import kr.meal.polyMealServer.util.MenuMap;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
