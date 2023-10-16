@@ -41,6 +41,10 @@ public class MenuMap {
         return isExistSchoolCode(schoolCode) && menuMap.get(schoolCode).get(date) != null;
     }
 
+    public void removeByDate(SchoolCode schoolCode, String date) {
+        menuMap.get(schoolCode).remove(date);
+    }
+
     /**
      * 테스트용 코드 절대 사용하지 말 것
      */
